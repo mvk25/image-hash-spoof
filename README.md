@@ -10,7 +10,7 @@ spoof 0x24 original.jpg altered.jpg
 and get a file `altered.jpg` such that running the sum on a Linux machine produces output like this:
 
 ```
-sha512sum <image_name>.jpg
-2448a6512f[...more bytes...]93de43f4b5b  <image_name>.jpg
+sha512sum altered.jpg
+2448a6512f[...more bytes...]93de43f4b5b  altered.jpg
 ```
 

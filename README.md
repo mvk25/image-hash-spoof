@@ -14,5 +14,3 @@ sha512sum <image_name>.jpg
 2448a6512f[...more bytes...]93de43f4b5b  <image_name>.jpg
 ```
 
-
-You can use a different image format (PNG, TIFF, etc.) 

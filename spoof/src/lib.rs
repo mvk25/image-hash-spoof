@@ -1,14 +1,14 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+mod chunk_type;
+pub use chunk_type::ChunkType;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod chunk;
+pub use chunk::Chunk;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+mod png;
+pub use png::Png;
+
+mod args;
+pub use args::{EncodeArgs, DecodeArgs, PngMeArgs, PrintArgs, RemoveArgs};
+
+mod commands;
+pub use commands::{decode, encode, print_chunks, remove};

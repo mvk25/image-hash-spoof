@@ -4,3 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.94"
+clap = { version = "4.5.23", features = ["derive"] }
+crc32fast = "1.4.2"
+hex = "0.4.3"
+hex-literal = "0.4.1"
+sha2 = "0.10.8"

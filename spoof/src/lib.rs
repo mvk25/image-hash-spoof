@@ -11,4 +11,4 @@ mod args;
 pub use args::{EncodeArgs, DecodeArgs, PngMeArgs, PrintArgs, RemoveArgs};
 
 mod commands;
-pub use commands::{decode, encode, print_chunks, remove};
+pub use commands::{decode, encode, print_chunks, remove, spoof};

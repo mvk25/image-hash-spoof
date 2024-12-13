@@ -12,7 +12,6 @@ pub use png::Png;
 
 fn main() -> anyhow::Result<()> {
     let args = PngMeArgs::parse();
-    println!("{:?}", args);
     match args {
         PngMeArgs::Encode(encode_args) => encode(encode_args),
         PngMeArgs::Decode(decode_args) => decode(decode_args),

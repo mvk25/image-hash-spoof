@@ -4,12 +4,14 @@ use std::io::{BufReader, Read};
 use crate::chunk_type::ChunkType;
 use crc32fast::Hasher;
 
+// Custom Error Types
 #[derive(Debug)]
 pub enum ChunkError {
     ChunkNotFound(String),
     ChunkLength(String),
 }
 
+// Display trait for our custom error.
 impl fmt::Display for ChunkError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -19,6 +21,7 @@ impl fmt::Display for ChunkError {
     }
 }
 
+// Chunk Layout that consists of four parts.
 #[derive(Debug)]
 pub struct Chunk {
     pub length: u32,
@@ -28,6 +31,7 @@ pub struct Chunk {
 }
 
 impl Chunk {
+    // Creating a new chunk from a chunk_type and chunk_data
     pub fn new(chunk_type: ChunkType, data: Vec<u8>) -> Self {
         let data_len = data.len() as u32;
         let chunk_type_bytes = chunk_type.chunk_type;
@@ -46,26 +50,32 @@ impl Chunk {
         }
     }
 
+    // Length data of chunk
     pub fn length(&self) -> u32 {
         self.length
     }
 
+    // Chunk type
     pub fn chunk_type(&self) -> &ChunkType {
         &self.chunk_type
     }
 
+    // Chunk data
     pub fn data(&self) -> &[u8] {
         self.chunk_data.as_ref()
     }
 
+    // Check sum
     pub fn crc(&self) -> u32 {
         self.crc
     }
 
+    // Chunk data as string
     pub fn data_as_string(&self) -> Result<String, Box<dyn Error>> {
         Ok(self.chunk_data.iter().map(|&x| x as char).collect())
     }
 
+    // Chunk Layout as bytes
     pub fn as_bytes(&self) -> Vec<u8> {
         let data_len = self.length.to_be_bytes();
         let crc_be = self.crc.to_be_bytes();
@@ -73,6 +83,7 @@ impl Chunk {
     }
 }
 
+// Type conversion of a Chunk from a primitive (byte) array
 impl TryFrom<&[u8]> for Chunk {
     type Error = ChunkError;
     fn try_from(text: &[u8]) -> Result<Self, Self::Error> {
@@ -100,37 +111,10 @@ impl TryFrom<&[u8]> for Chunk {
             chunk_data: data,
             crc
         })
-
-
-        // let text_len: usize = text.len();
-
-        // let mut array_length: [u8; 4] = [0u8; 4];
-        // let array_len_vec = text.iter().take(4).copied().collect::<Vec<u8>>();
-        // let data_length: &[u8] = array_len_vec.as_ref();
-        // array_length.copy_from_slice(data_length);
-
-        // let mut array_chunk_type: [u8; 4] = [0u8; 4];
-        // let chunk_type_vec : &[u8] = &text[4..8].iter().copied().collect::<Vec<u8>>();
-        // let chunk_type_byte: &[u8] = chunk_type_vec.as_ref();
-        // array_chunk_type.copy_from_slice(chunk_type_byte);
-        // let chunk_type: ChunkType = ChunkType::try_from(array_chunk_type).unwrap();
-
-        // let crc_start_pos: usize = text_len - 4;
-        // let data_chunk: Vec<u8> = text[8..crc_start_pos].iter().copied().collect();
-
-        // let mut array_crc: [u8; 4] = [0u8; 4];
-        // let crc: &[u8] = &text[crc_start_pos..text_len];
-        // array_crc.copy_from_slice(crc);
-
-        // Ok(Chunk {
-        //     length: u32::from_be_bytes(array_length),
-        //     chunk_type: chunk_type,
-        //     chunk_data: data_chunk,
-        //     crc: u32::from_be_bytes(array_crc),
-        // })
     }
 }
 
+// Display Trait for Chunk
 impl fmt::Display for Chunk {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "Chunk {{ ")?;

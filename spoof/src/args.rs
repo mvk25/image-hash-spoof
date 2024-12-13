@@ -12,15 +12,6 @@ pub enum PngMeArgs {
     Spoof(SpoofArgs),
 }
 
-
-// #[derive(Subcommand, Debug)]
-// pub enum Commands {
-//     Encode(EncodeArgs),
-//     Decode(DecodeArgs),
-//     Remove(RemoveArgs),
-//     Print(PrintArgs),
-// }
-
 #[derive(Parser, Debug)]
 pub struct SpoofArgs {
     pub hex: String,

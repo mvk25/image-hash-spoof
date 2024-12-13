@@ -28,6 +28,8 @@ Portable Network Graphics(PNG) file format. You are recommended to test it out a
     The original image remains viewable, but the file now includes additional data influencing its hash.
 
 
+[When working on this prohect I learnt about the PNG File structure on this site](http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html)
+
 ## Installation Guide
 # Prerequisites
 1. Open a terminal and run the following command.

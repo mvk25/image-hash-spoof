@@ -9,6 +9,8 @@ use crate::chunk::Chunk;
 use crate::chunk_type::ChunkType;
 use sha2::{Sha512, Digest};
  
+
+#[allow(unused_assignments)] // Assuring the compiler that the result var will somehow be used later in our code.
 // Add a ancillary chunk type and create a nonce as the chunk data.
 // You can increment the nonce to hit the target of the hash you want to
 // achieve. This is similar to Bitcoin's target/difficulty for a block.
@@ -16,7 +18,9 @@ pub fn spoof(args: SpoofArgs) -> anyhow::Result<()> {
     let mut png = Png::from_file(args.og_file)?;
     let mut nonce: u32 = 1;
     let mut result = String::new();
-    
+
+    let hex_chars = args.hex[2..].chars().all(|char| char.is_ascii_hexdigit());
+    if !hex_chars { panic!("Please insert a valid hexadecimal charater string")};
     loop {
         // Create a new chunk with the ancillary bit set.
         let chunk_type = ChunkType::from_str("rUSt").unwrap();
@@ -28,7 +32,7 @@ pub fn spoof(args: SpoofArgs) -> anyhow::Result<()> {
         hasher.update(png.as_bytes());
         result = hex::encode(hasher.finalize());
         
-        // Check for our condition.
+        // Check if the hash meets our target difficulty
         if result.starts_with(&args.hex[2..]) {
             let mut altered_file = fs::File::create(&args.altered).unwrap();
             altered_file.write(&png.as_bytes()).unwrap();

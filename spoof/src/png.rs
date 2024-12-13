@@ -6,11 +6,14 @@ use std::path::Path;
 use std::io::{BufReader, Read};
 use std::str::FromStr;
 
+// Custom Error types
 #[derive(Debug)]
 pub enum PngError {
     ChunkNotFound(String),
     HeaderNotFound(String),
 }
+
+// Display traits for Error types
 impl fmt::Display for PngError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -22,6 +25,7 @@ impl fmt::Display for PngError {
 
 impl std::error::Error for PngError {}
 
+// Png file structure.
 #[derive(Debug)]
 pub struct Png {
     signature: [u8; 8],
@@ -29,7 +33,10 @@ pub struct Png {
 }
 
 impl Png {
+    // PNG File signature
     pub const STANDARD_HEADER: [u8; 8] = [137, 80, 78, 71, 13, 10, 26, 10];
+
+    // Implement a png file from a series of chunks
     pub fn from_chunks(chunks: Vec<Chunk>) -> Png {
         Png {
             signature: Self::STANDARD_HEADER,
@@ -37,15 +44,18 @@ impl Png {
         }
     }
 
+    // Implement a png file from a png file
     pub fn from_file<P: AsRef<Path>>(path: P) -> anyhow::Result<Self> {
         let bytes = fs::read(path)?;
         Ok(Self::try_from(bytes.as_ref())?)
     }
 
+    // Add a Chunk at the end of a png file
     pub fn append_chunk(&mut self, chunk: Chunk) {
         self.chunks.push(chunk);
     }
 
+    // Remove the first chunk of a png file
     pub fn remove_first_chunk(&mut self, chunk_type: &str) -> Result<Chunk, PngError> {
         let new_chunktype = ChunkType::from_str(chunk_type).unwrap();
         if let Some(first_chunk) = self.chunks.iter().position(|x| x.chunk_type == new_chunktype) {            
@@ -55,6 +65,7 @@ impl Png {
         Err(PngError::ChunkNotFound(chunk_type.to_string()))
     }
 
+    // Remove a chunk using its chunk_type
     pub fn remove_chunk(&mut self, chunk_type: &str) -> anyhow::Result<Chunk> {
         let chunk_type = ChunkType::from_str(chunk_type).unwrap();
         let mut target_index: Option<usize> = None;
@@ -71,14 +82,17 @@ impl Png {
         }
     }
 
+    // Returns the file signature
     pub fn header(&self) -> &[u8] {
         Png::STANDARD_HEADER.as_ref()
     }
 
+    // Return the chunks in a png file.
     pub fn chunks(&self) -> &[Chunk] {
         &self.chunks
     }
 
+    // Return a chunk by its chunk_type
     pub fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
         let container_chunk = self.chunks.iter().filter(|x| x.chunk_type() == &ChunkType::from_str(chunk_type).unwrap()).collect::<Vec<&Chunk>>();
         if container_chunk.len() > 0 {
@@ -88,6 +102,7 @@ impl Png {
         None
     }
 
+    // Get the whole png as a Vector collection
     pub fn as_bytes(&self) -> Vec<u8> {
         let chunks_vec: Vec<u8> = self.chunks.iter()
         .flat_map(|x| x.as_bytes())
@@ -100,6 +115,7 @@ impl Png {
     }
 }
 
+// Type conversion of a Png from a primitive (byte) array
 impl TryFrom<&[u8]> for Png {
     type Error = PngError;
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
@@ -134,6 +150,7 @@ impl TryFrom<&[u8]> for Png {
     }
 }
 
+// Display trait for Png
 impl fmt::Display for Png {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "Signature {:?}", self.signature)?;

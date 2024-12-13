@@ -2,16 +2,20 @@ use std::convert::TryFrom;
 use std::fmt;
 use std::str::FromStr;
 
+// A four bytes chunk type code. Type code consists of four type codes consisting
+// of uppercase and lowercase letters.
 #[derive(Debug)]
 pub struct ChunkType {
     pub chunk_type: [u8; 4],
 }
 
 impl ChunkType {
+    // Get the bytes representation of the ChunkType Struct
     pub fn bytes(&self) -> [u8; 4] {
         self.chunk_type
     }
 
+    // Check if the chunk_type is valid
     pub fn is_valid(&self) -> bool {
         if self.is_reserved_bit_valid() && self.chunk_type.into_iter().all(|x| x.is_ascii_alphabetic()) {
             true
@@ -20,6 +24,7 @@ impl ChunkType {
         }
     }
 
+    // Check if the ancillary bit is set(bit 5 of the first byte)
     pub fn is_critical(&self) -> bool {
         if self.chunk_type[0] & 32u8 == 32 {
             false
@@ -28,6 +33,7 @@ impl ChunkType {
         }
     }
 
+    // Check if the private bit is set.(bit 5 of the second byte)
     pub fn is_public(&self) -> bool {
         if self.chunk_type[1] & 32u8 == 32 {
             false
@@ -36,6 +42,7 @@ impl ChunkType {
         }
     }
 
+    // Check if the reserved bit is set.(bit 5 of the third byte)
     pub fn is_reserved_bit_valid(&self) -> bool {
         if self.chunk_type[2] & 32u8 == 32 {
             false
@@ -44,6 +51,7 @@ impl ChunkType {
         }
     }
 
+    // Check if the safe bit is set.(bit 5 of the fourth byte)
     pub fn is_safe_to_copy(&self) -> bool {
         if self.chunk_type[3] & 32u8 == 32 {
             true
@@ -54,7 +62,7 @@ impl ChunkType {
 
 }
 
-
+// Type conversion of a ChunkType from a primitive (byte) array
 impl TryFrom<[u8; 4]> for ChunkType {
     type Error = String;
     fn try_from(value: [u8; 4]) -> Result<Self, Self::Error> {
@@ -68,6 +76,7 @@ impl TryFrom<[u8; 4]> for ChunkType {
     }
 }
 
+// Implementing a ChunkType from a four character string
 impl FromStr for ChunkType {
     type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -89,12 +98,14 @@ impl FromStr for ChunkType {
     }
 }
 
+// Display trait implementation for ChunkType
 impl fmt::Display for ChunkType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", String::from_utf8_lossy(&self.chunk_type))
     }
 }
 
+// Compare different ChunkTypes for equality
 impl PartialEq for ChunkType {
     fn eq(&self, other: &Self) -> bool {
         self.chunk_type.into_iter().zip(other.chunk_type.into_iter()).all(|x| x.0 == x.1)

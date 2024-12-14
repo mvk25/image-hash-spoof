@@ -56,7 +56,8 @@ cd image-hash-spoof/spoof
 3. Build and run the project.
 The original.png file should be an existing png file while the altered.png will be created
 when the program is executing. So you should only care to provide the path of the original.png file
-and the output will be created in this directory you called this proram in during runtime.
+and the output will be created in this directory using the name you passed in cli. For instance,
+a file called altered.png will be created.
 
 ```bash
 cargo run -- spoof 0x24 original.png altered.png

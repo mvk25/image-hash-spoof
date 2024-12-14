@@ -8,23 +8,17 @@ Portable Network Graphics(PNG) file format. You are recommended to test it out a
 1. Reading the PNG File:
     The program reads the binary data of a PNG file, ensuring that the structure remains valid and adheres to the PNG specification.
 
-2. Appending a Custom Chunk:
-
-    A new chunk is added after the IEND chunk. This chunk contains custom data and is carefully constructed to preserve the integrity of the PNG file.
+2. Appending a Custom Chunk: A new chunk is added after the IEND chunk. This chunk contains custom data and is carefully constructed to preserve the integrity of the PNG file.
     The chunk format includes:
         Length: The size of the data (excluding the type and CRC).
         Type: A four-character code indicating the chunk type.
         Data: The custom data, which includes a nonce in BigEndian byte format used for hash tweaking.
         CRC: A cyclic redundancy check computed for the chunk's type and data.
 
-3. Hash Tuning:
-
-    Using the sha2 crate in Rust, the program computes the hash of the modified file.
+3. Hash Tuning: Using the sha2 crate in Rust, the program computes the hash of the modified file.
     A nonce is iteratively modified within the custom chunk data, and the hash is recalculated until it meets specific criteria (e.g., starts with a certain number of zeros).
 
-4. Output:
-
-    Once the desired hash is achieved, the modified PNG file is saved with the new chunk included.
+4. Output: Once the desired hash is achieved, the modified PNG file is saved with the new chunk included.
     The original image remains viewable, but the file now includes additional data influencing its hash.
 
 
@@ -60,6 +54,9 @@ cd image-hash-spoof/spoof
 ```
 
 3. Build and run the project.
+The original.png file should be an existing png file while the altered.png will be created
+when the program is executing. So you should only care to provide the path of the original.png file
+and the output will be created in this directory you called this proram in during runtime.
 
 ```bash
 cargo run -- spoof 0x24 original.png altered.png
